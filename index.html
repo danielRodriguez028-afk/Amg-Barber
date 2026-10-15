@@ -394,29 +394,82 @@
     Sistema de citas en línea
   </footer>
 
-  <script>
-    const fecha = document.getElementById("fecha");
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://omptefmybwlhehgixkwa.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_2CWnYeLNuhix-vM4uRg2KA__1Clvgnf";
 
-    const hoy = new Date();
-    const anio = hoy.getFullYear();
-    const mes = String(hoy.getMonth() + 1).padStart(2, "0");
-    const dia = String(hoy.getDate()).padStart(2, "0");
+  const clienteSupabase = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
 
-    fecha.min = `${anio}-${mes}-${dia}`;
+  const fecha = document.getElementById("fecha");
+  const formulario = document.getElementById("reserva");
 
-    document.getElementById("reserva").addEventListener(
-      "submit",
-      function (evento) {
-        evento.preventDefault();
+  const hoy = new Date();
+  const anio = hoy.getFullYear();
+  const mes = String(hoy.getMonth() + 1).padStart(2, "0");
+  const dia = String(hoy.getDate()).padStart(2, "0");
 
+  fecha.min = `${anio}-${mes}-${dia}`;
+
+  formulario.addEventListener("submit", async function (evento) {
+    evento.preventDefault();
+
+    const boton = formulario.querySelector('button[type="submit"]');
+
+    if (boton) {
+      boton.disabled = true;
+      boton.textContent = "Guardando cita...";
+    }
+
+    try {
+      const { data, error } = await clienteSupabase.rpc(
+        "crear_reserva",
+        {
+          p_nombre: document.getElementById("nombre").value.trim(),
+          p_telefono: document.getElementById("telefono").value.trim(),
+          p_servicio: document.getElementById("servicio").value,
+          p_fecha: fecha.value,
+          p_hora: document.getElementById("hora").value
+        }
+      );
+
+      if (error) {
+        console.error("Error al guardar la cita:", error);
         alert(
-          "¡Gracias por elegir AMG BARBER! " +
-          "El sistema de confirmación todavía está en desarrollo. " +
-          "Tu cita aún no ha sido reservada."
+          "No pudimos guardar tu cita. Inténtalo más tarde."
         );
+        return;
       }
-    );
-  </script>
 
+      if (data !== true) {
+        alert(
+          "No se pudo reservar ese horario. " +
+          "Puede estar ocupado o los datos no ser válidos. " +
+          "Prueba con otra hora."
+        );
+        return;
+      }
+
+      alert(
+        "¡Solicitud recibida en AMG BARBER! " +
+        "Tu cita quedó pendiente de confirmación."
+      );
+
+      formulario.reset();
+
+    } catch (error) {
+      console.error(error);
+      alert("Hubo un problema de conexión. Inténtalo de nuevo.");
+    } finally {
+      if (boton) {
+        boton.disabled = false;
+        boton.textContent = "Reservar cita";
+      }
+    }
+  });
+</script>
 </body>
 </html>
