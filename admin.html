@@ -1,0 +1,296 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel privado | AMG BARBER</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #0b0b0b;
+      color: #f5f5f5;
+      font-family: Arial, sans-serif;
+    }
+    main { max-width: 850px; margin: 35px auto; }
+    .card {
+      background: #171717;
+      border: 1px solid #6f5728;
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+    h1, h2 { color: #d9b568; }
+    input, button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 10px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    input {
+      color: white;
+      background: #101010;
+      border: 1px solid #555;
+    }
+    button {
+      cursor: pointer;
+      border: 0;
+      background: #d9b568;
+      color: #111;
+      font-weight: bold;
+    }
+    button:disabled { opacity: .55; }
+    .secondary {
+      background: #333;
+      color: white;
+    }
+    .cancel {
+      background: #782e2e;
+      color: white;
+    }
+    .muted { color: #bbb; font-size: 14px; }
+    .status { color: #e9c879; font-weight: bold; }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    #mensaje { white-space: pre-wrap; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>AMG BARBER</h1>
+    <p class="muted">Panel privado de administración</p>
+  </header>
+
+  <section class="card" id="login">
+    <h2>Iniciar sesión</h2>
+    <form id="formLogin">
+      <input id="correo" type="email"
+        placeholder="Correo del barbero"
+        autocomplete="username" required>
+      <input id="contrasena" type="password"
+        placeholder="Contraseña"
+        autocomplete="current-password" required>
+      <button id="btnLogin" type="submit">
+        Entrar al panel
+      </button>
+    </form>
+  </section>
+
+  <section id="panel" hidden>
+    <div class="card">
+      <h2>Administrar citas</h2>
+      <p id="bienvenida" class="muted"></p>
+      <button id="btnActualizar" type="button">
+        Actualizar citas
+      </button>
+      <button id="btnSalir" class="secondary" type="button">
+        Cerrar sesión
+      </button>
+    </div>
+    <div id="reservas"></div>
+  </section>
+
+  <section class="card">
+    <p id="mensaje" class="muted" role="status">
+      Inicia sesión para continuar.
+    </p>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL =
+    "https://omptefmybwlhehgixkwa.supabase.co";
+
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_2CWnYeLNuhix-vM4uRg2KA__1Clvgnf";
+
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  const login = document.getElementById("login");
+  const panel = document.getElementById("panel");
+  const mensaje = document.getElementById("mensaje");
+  const lista = document.getElementById("reservas");
+
+  function decir(texto) {
+    mensaje.textContent = texto;
+  }
+
+  function escapar(valor) {
+    return String(valor ?? "").replace(/[&<>"']/g, c => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[c]);
+  }
+
+  function mostrarSesion(sesion) {
+    login.hidden = !!sesion;
+    panel.hidden = !sesion;
+
+    if (sesion) {
+      document.getElementById("bienvenida").textContent =
+        "Sesión iniciada: " + sesion.user.email;
+    } else {
+      lista.replaceChildren();
+      decir("Inicia sesión para continuar.");
+    }
+  }
+
+  async function cargarReservas() {
+    lista.replaceChildren();
+    decir("Cargando citas...");
+
+    const { data, error } = await db
+      .from("reservas")
+      .select("id,nombre,telefono,servicio,fecha,hora,estado")
+      .order("fecha", { ascending: true })
+      .order("hora", { ascending: true });
+
+    if (error) {
+      console.error(error);
+      decir("No se pudieron cargar las citas. Comprueba tu sesión y los permisos.");
+      return;
+    }
+
+    decir(data.length
+      ? "Citas encontradas: " + data.length
+      : "Todavía no hay citas.");
+
+    data.forEach(cita => {
+      const tarjeta = document.createElement("article");
+      tarjeta.className = "card";
+
+      tarjeta.innerHTML = `
+        <h2>${escapar(cita.nombre)}</h2>
+        <p>Teléfono: ${escapar(cita.telefono)}</p>
+        <p>Servicio: ${escapar(cita.servicio)}</p>
+        <p>Fecha: ${escapar(cita.fecha)}</p>
+        <p>Hora: ${escapar(String(cita.hora).slice(0, 5))}</p>
+        <p>Estado: <span class="status">${escapar(cita.estado)}</span></p>
+      `;
+
+      if (cita.estado === "pendiente") {
+        const acciones = document.createElement("div");
+        acciones.className = "actions";
+
+        const confirmar = document.createElement("button");
+        confirmar.textContent = "Confirmar";
+        confirmar.addEventListener("click", () =>
+          cambiarEstado(cita.id, "confirmada", confirmar, cancelar)
+        );
+
+        const cancelar = document.createElement("button");
+        cancelar.textContent = "Cancelar cita";
+        cancelar.className = "cancel";
+        cancelar.addEventListener("click", () =>
+          cambiarEstado(cita.id, "cancelada", cancelar, confirmar)
+        );
+
+        acciones.append(confirmar, cancelar);
+        tarjeta.appendChild(acciones);
+      }
+
+      lista.appendChild(tarjeta);
+    });
+  }
+
+  async function cambiarEstado(id, nuevoEstado, boton, otroBoton) {
+    if (!confirm("¿Quieres cambiar el estado a " + nuevoEstado + "?")) {
+      return;
+    }
+
+    boton.disabled = true;
+    otroBoton.disabled = true;
+    decir("Actualizando cita...");
+
+    const { data, error } = await db
+      .from("reservas")
+      .update({ estado: nuevoEstado })
+      .eq("id", id)
+      .eq("estado", "pendiente")
+      .select("id");
+
+    if (error || !data || data.length === 0) {
+      console.error(error);
+      decir("No se pudo actualizar. Revisa los permisos o el estado de la cita.");
+      boton.disabled = false;
+      otroBoton.disabled = false;
+      return;
+    }
+
+    decir("Cita actualizada correctamente.");
+    await cargarReservas();
+  }
+
+  document.getElementById("formLogin")
+    .addEventListener("submit", async evento => {
+      evento.preventDefault();
+
+      const boton = document.getElementById("btnLogin");
+      boton.disabled = true;
+      decir("Comprobando acceso...");
+
+      try {
+        const { data, error } = await db.auth.signInWithPassword({
+          email: document.getElementById("correo").value.trim(),
+          password: document.getElementById("contrasena").value
+        });
+
+        if (error) {
+          decir("No se pudo iniciar sesión. Revisa el correo y la contraseña.");
+          return;
+        }
+
+        mostrarSesion(data.session);
+        document.getElementById("contrasena").value = "";
+        await cargarReservas();
+      } catch (error) {
+        console.error(error);
+        decir("Error de conexión. Inténtalo nuevamente.");
+      } finally {
+        boton.disabled = false;
+      }
+    });
+
+  document.getElementById("btnActualizar")
+    .addEventListener("click", cargarReservas);
+
+  document.getElementById("btnSalir")
+    .addEventListener("click", async () => {
+      await db.auth.signOut();
+      mostrarSesion(null);
+    });
+
+  async function iniciar() {
+    const { data, error } = await db.auth.getSession();
+
+    if (error) {
+      decir("No se pudo comprobar la sesión.");
+      return;
+    }
+
+    mostrarSesion(data.session);
+
+    if (data.session) {
+      await cargarReservas();
+    }
+  }
+
+  iniciar();
+</script>
+</body>
+</html>
