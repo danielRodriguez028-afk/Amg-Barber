@@ -1,0 +1,422 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080808">
+  <meta name="description" content="Reserva tu cita en AMG BARBER.">
+  <title>AMG BARBER | Reserva tu estilo</title>
+
+  <style>
+    :root {
+      --negro: #080808;
+      --panel: #151515;
+      --dorado: #d4af37;
+      --blanco: #ffffff;
+      --gris: #b9b9b9;
+      --borde: #303030;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--negro);
+      color: var(--blanco);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    header {
+      padding: 30px 18px 24px;
+      text-align: center;
+      background: #050505;
+      border-bottom: 1px solid var(--dorado);
+    }
+
+    .logo {
+      display: inline-flex;
+      width: 66px;
+      height: 66px;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--dorado);
+      border-radius: 50%;
+      color: var(--blanco);
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      margin-bottom: 12px;
+    }
+
+    header h1 {
+      margin: 0;
+      color: var(--dorado);
+      font-size: 30px;
+      letter-spacing: 5px;
+    }
+
+    header p {
+      color: var(--blanco);
+      font-size: 13px;
+      letter-spacing: 2px;
+      margin-bottom: 0;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 22px;
+      padding: 15px 10px;
+      background: #101010;
+      border-bottom: 1px solid var(--borde);
+    }
+
+    nav a {
+      color: var(--blanco);
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    nav a:hover {
+      color: var(--dorado);
+    }
+
+    .hero {
+      text-align: center;
+      padding: 42px 20px;
+      background:
+        radial-gradient(ellipse at top, #292113 0%, #111111 42%, #080808 78%);
+    }
+
+    .etiqueta {
+      color: var(--dorado);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .hero h2 {
+      max-width: 450px;
+      margin: 14px auto;
+      font-size: clamp(29px, 8vw, 43px);
+      line-height: 1.15;
+    }
+
+    .hero h2 span {
+      color: var(--dorado);
+    }
+
+    .hero p {
+      max-width: 350px;
+      margin: 0 auto;
+      color: var(--gris);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .boton {
+      display: inline-block;
+      margin-top: 23px;
+      padding: 14px 22px;
+      border: 1px solid var(--dorado);
+      border-radius: 7px;
+      background: var(--dorado);
+      color: #080808;
+      font-weight: bold;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .boton:hover {
+      background: #f0d778;
+    }
+
+    main {
+      max-width: 560px;
+      margin: auto;
+      padding: 24px 16px;
+    }
+
+    .panel {
+      padding: 22px;
+      margin-bottom: 20px;
+      background: var(--panel);
+      border: 1px solid var(--borde);
+      border-radius: 13px;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: var(--dorado);
+      font-size: 21px;
+    }
+
+    .descripcion {
+      color: var(--gris);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .servicio {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--borde);
+    }
+
+    .servicio:last-child {
+      border-bottom: none;
+    }
+
+    .servicio strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--blanco);
+    }
+
+    .servicio small {
+      color: var(--gris);
+    }
+
+    .precio {
+      color: var(--dorado);
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 8px;
+      color: var(--blanco);
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px;
+      border: 1px solid #414141;
+      border-radius: 7px;
+      background: #0b0b0b;
+      color: var(--blanco);
+      font-size: 16px;
+    }
+
+    input:focus, select:focus {
+      outline: 1px solid var(--dorado);
+      border-color: var(--dorado);
+    }
+
+    form .boton {
+      width: 100%;
+      min-height: 48px;
+    }
+
+    .aviso {
+      color: var(--gris);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    footer {
+      padding: 25px 18px;
+      text-align: center;
+      border-top: 1px solid var(--borde);
+      color: var(--gris);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    footer strong {
+      color: var(--dorado);
+      letter-spacing: 2px;
+    }
+
+    @media (max-width: 380px) {
+      .panel {
+        padding: 17px;
+      }
+
+      header h1 {
+        font-size: 25px;
+      }
+
+      nav {
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header id="inicio">
+    <div class="logo" aria-label="AMG">AMG</div>
+    <h1>AMG BARBER</h1>
+    <p>ESTILO · PRECISIÓN · PERSONALIDAD</p>
+  </header>
+
+  <nav>
+    <a href="#inicio">Inicio</a>
+    <a href="#servicios">Servicios</a>
+    <a href="#reservar">Reservar cita</a>
+  </nav>
+
+  <section class="hero">
+    <div class="etiqueta">Tu imagen, nuestra pasión</div>
+    <h2>Tu estilo merece un toque <span>único.</span></h2>
+    <p>
+      Vive una experiencia de barbería con estilo.
+      Elige tu servicio y prepara tu próxima visita.
+    </p>
+    <a class="boton" href="#reservar">RESERVAR MI CITA</a>
+  </section>
+
+  <main>
+    <section class="panel" id="servicios">
+      <h2>Nuestros servicios</h2>
+      <p class="descripcion">
+        Calidad en cada detalle. Los precios definitivos
+        se agregarán con la información de la barbería.
+      </p>
+
+      <div class="servicio">
+        <div>
+          <strong>Corte clásico</strong>
+          <small>Corte personalizado</small>
+        </div>
+        <span class="precio">Por definir</span>
+      </div>
+
+      <div class="servicio">
+        <div>
+          <strong>Corte + diseño</strong>
+          <small>Un estilo a tu gusto</small>
+        </div>
+        <span class="precio">Por definir</span>
+      </div>
+
+      <div class="servicio">
+        <div>
+          <strong>Arreglo de barba</strong>
+          <small>Detalles y perfilado</small>
+        </div>
+        <span class="precio">Por definir</span>
+      </div>
+    </section>
+
+    <section class="panel" id="reservar">
+      <h2>Reserva tu cita</h2>
+      <p class="descripcion">
+        Completa los datos para solicitar tu horario preferido.
+      </p>
+
+      <form id="reserva">
+        <label for="nombre">Nombre completo</label>
+        <input
+          id="nombre"
+          name="nombre"
+          type="text"
+          maxlength="80"
+          autocomplete="name"
+          placeholder="Escribe tu nombre"
+          required
+        >
+
+        <label for="telefono">Teléfono de contacto</label>
+        <input
+          id="telefono"
+          name="telefono"
+          type="tel"
+          maxlength="20"
+          autocomplete="tel"
+          placeholder="Tu número de teléfono"
+          required
+        >
+
+        <label for="servicio">Selecciona tu servicio</label>
+        <select id="servicio" name="servicio" required>
+          <option value="">Elige una opción</option>
+          <option value="Corte clásico">Corte clásico</option>
+          <option value="Corte + diseño">Corte + diseño</option>
+          <option value="Arreglo de barba">Arreglo de barba</option>
+        </select>
+
+        <label for="fecha">Fecha preferida</label>
+        <input id="fecha" name="fecha" type="date" required>
+
+        <label for="hora">Hora preferida</label>
+        <select id="hora" name="hora" required>
+          <option value="">Elige una hora</option>
+          <option value="10:00">10:00</option>
+          <option value="11:00">11:00</option>
+          <option value="12:00">12:00</option>
+          <option value="13:00">13:00</option>
+          <option value="14:00">14:00</option>
+          <option value="15:00">15:00</option>
+          <option value="16:00">16:00</option>
+          <option value="17:00">17:00</option>
+          <option value="18:00">18:00</option>
+        </select>
+
+        <button class="boton" type="submit">
+          CONTINUAR
+        </button>
+      </form>
+
+      <p class="aviso">
+        Versión inicial: enviar este formulario todavía no
+        guarda ni confirma una cita. Estamos preparando
+        el sistema de reservas.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <strong>AMG BARBER</strong>
+    <br>
+    Tu estilo. Tu momento.
+    <br>
+    Sistema de citas en línea
+  </footer>
+
+  <script>
+    const fecha = document.getElementById("fecha");
+
+    const hoy = new Date();
+    const anio = hoy.getFullYear();
+    const mes = String(hoy.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoy.getDate()).padStart(2, "0");
+
+    fecha.min = `${anio}-${mes}-${dia}`;
+
+    document.getElementById("reserva").addEventListener(
+      "submit",
+      function (evento) {
+        evento.preventDefault();
+
+        alert(
+          "¡Gracias por elegir AMG BARBER! " +
+          "El sistema de confirmación todavía está en desarrollo. " +
+          "Tu cita aún no ha sido reservada."
+        );
+      }
+    );
+  </script>
+
+</body>
+</html>
