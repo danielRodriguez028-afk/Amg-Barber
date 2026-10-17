@@ -330,14 +330,24 @@
         <span class="precio">Por definir</span>
       </div>
 
-      <div class="servicio">
-        <div>
-          <strong>Arreglo de barba</strong>
-          <small>Detalles y perfilado</small>
-        </div>
-        <span class="precio">Por definir</span>
-      </div>
-    </section>
+      
+<div class="servicio">
+  <div>
+    <strong>Arreglo de barba + corte</strong>
+    <small>Arreglo de barba y corte de cabello</small>
+  </div>
+  <span class="precio">Por definir</span>
+</div>
+
+<div class="servicio">
+  <div>
+    <strong>Corte personalizado</strong>
+    <small>Escribe el corte que deseas</small>
+  </div>
+  <span class="precio">Por definir</span>
+</div>
+</section>
+
 
     <section class="panel" id="reservar">
       <h2>Reserva tu cita</h2>
@@ -368,13 +378,27 @@
           required
         >
 
-        <label for="servicio">Selecciona tu servicio</label>
-        <select id="servicio" name="servicio" required>
-          <option value="">Elige una opción</option>
-          <option value="Corte clásico">Corte clásico</option>
-          <option value="Corte + diseño">Corte + diseño</option>
-          <option value="Arreglo de barba">Arreglo de barba</option>
-        </select>
+        
+<label for="servicio">Selecciona tu servicio</label>
+<select id="servicio" name="servicio" required>
+  <option value="">Elige una opción</option>
+  <option value="Corte clásico">Corte clásico</option>
+  <option value="Corte + diseño">Corte + diseño</option>
+  <option value="Arreglo de barba + corte">Arreglo de barba + corte</option>
+  <option value="Corte personalizado">Corte personalizado</option>
+</select>
+
+<div id="campoCortePersonalizado" hidden>
+  <label for="cortePersonalizado">¿Qué corte te quieres hacer?</label>
+  <input
+    id="cortePersonalizado"
+    name="cortePersonalizado"
+    type="text"
+    maxlength="100"
+    placeholder="Ej. taper bajo, taper medio, mohawk"
+  >
+</div>
+
 
         <label for="fecha">Fecha preferida</label>
         <input id="fecha" name="fecha" type="date" required>
@@ -502,6 +526,23 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
+</script>
+
+<script>
+  const servicioSelect = document.getElementById("servicio");
+  const campoPersonalizado = document.getElementById("campoCortePersonalizado");
+  const cortePersonalizado = document.getElementById("cortePersonalizado");
+
+  servicioSelect.addEventListener("change", function () {
+    const esPersonalizado = this.value === "Corte personalizado";
+
+    campoPersonalizado.hidden = !esPersonalizado;
+    cortePersonalizado.required = esPersonalizado;
+
+    if (!esPersonalizado) {
+      cortePersonalizado.value = "";
+    }
+  });
 </script>
 
 </body>
