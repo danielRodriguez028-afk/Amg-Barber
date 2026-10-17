@@ -1,7 +1,22 @@
 
 <!DOCTYPE html>
 <html lang="es">
-<head>
+  
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "d213a8cd-7f96-4caa-a6a2-71c0ecb650f7",
+      serviceWorkerPath: "Amg-Barber/OneSignalSDKWorker.js",
+      serviceWorkerParam: {
+        scope: "/Amg-Barber/"
+      }
+    });
+  });
+</script>
+
+ <head>
   
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#0b0b0b">
