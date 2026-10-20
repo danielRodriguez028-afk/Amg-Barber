@@ -569,33 +569,42 @@ window.amgOneSignalReady = new Promise((resolve) => {
     }
 
     try {
-      const { data, error } = await clienteSupabase.rpc(
-        "crear_reserva",
-        {
-          p_nombre: document.getElementById("nombre").value.trim(),
-          p_telefono: document.getElementById("telefono").value.trim(),
-          p_servicio: document.getElementById("servicio").value,
-          p_fecha: fecha.value,
-          p_hora: document.getElementById("hora").value
-        }
-      );
+      
+const OneSignal = await window.amgOneSignalReady;
 
-      if (error) {
-        console.error("Error al guardar la cita:", error);
-        alert(
-          "No pudimos guardar tu cita. Inténtalo más tarde."
-        );
-        return;
-      }
+let idSuscripcion = null;
 
-      if (data !== true) {
-        alert(
-          "No se pudo reservar ese horario. " +
-          "Puede estar ocupado o los datos no ser válidos. " +
-          "Prueba con otra hora."
-        );
-        return;
-      }
+if (OneSignal) {
+  idSuscripcion =
+    OneSignal.User.PushSubscription.id || null;
+}
+
+const { data, error } = await clienteSupabase.rpc(
+  "crear_reserva_con_id",
+  {
+    p_nombre: document.getElementById("nombre").value.trim(),
+    p_telefono: document.getElementById("telefono").value.trim(),
+    p_servicio: document.getElementById("servicio").value,
+    p_fecha: fecha.value,
+    p_hora: document.getElementById("hora").value,
+    p_onesignal_subscription_id: idSuscripcion
+  }
+);
+
+if (error) {
+  console.error("Error al guardar la cita:", error);
+  alert("No pudimos guardar tu cita. Inténtalo más tarde.");
+  return;
+}
+
+if (!data) {
+  alert(
+    "No se pudo reservar ese horario. " +
+    "Puede estar ocupado o los datos no ser válidos. " +
+    "Prueba con otra hora."
+  );
+  return;
+}
 
       alert(
         "¡Solicitud recibida en AMG BARBER! " +
