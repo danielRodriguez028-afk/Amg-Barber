@@ -14,6 +14,8 @@
     });
 
     await OneSignal.Slidedown.promptPush();
+    const idSuscripcion = OneSignal.User.PushSubscription.id;
+console.log("Suscripción OneSignal:", idSuscripcion);
   });
 </script>
  <head>
