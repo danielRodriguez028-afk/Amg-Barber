@@ -575,8 +575,11 @@ const OneSignal = await window.amgOneSignalReady;
 let idSuscripcion = null;
 
 if (OneSignal) {
-  idSuscripcion =
-    OneSignal.User.PushSubscription.id || null;
+  const suscripcion = OneSignal.User.PushSubscription;
+
+  if (suscripcion.optedIn) {
+    idSuscripcion = suscripcion.id || null;
+  }
 }
 
 const { data, error } = await clienteSupabase.rpc(
