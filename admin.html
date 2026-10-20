@@ -213,15 +213,16 @@
     });
   }
 
-  async function cambiarEstado(id, nuevoEstado, boton, otroBoton) {
-    if (!confirm("¿Quieres cambiar el estado a " + nuevoEstado + "?")) {
-      return;
-    }
+  
+async function cambiarEstado(id, nuevoEstado, boton, otroBoton) {
+  if (!confirm("¿Quieres cambiar el estado a " + nuevoEstado + "?")) {
+    return;
+  }
 
-    boton.disabled = true;
-    otroBoton.disabled = true;
-    decir("Actualizando cita...");
+  boton.disabled = true;
+  otroBoton.disabled = true;
 
+  try {
     const { data, error } = await db
       .from("reservas")
       .update({ estado: nuevoEstado })
@@ -231,15 +232,61 @@
 
     if (error || !data || data.length === 0) {
       console.error(error);
-      decir("No se pudo actualizar. Revisa los permisos o el estado de la cita.");
+      decir("No se pudo actualizar la cita. Revisa los permisos o su estado.");
       boton.disabled = false;
       otroBoton.disabled = false;
       return;
     }
 
-    decir("Cita actualizada correctamente.");
+    const { data: sesionData } = await db.auth.getSession();
+    const sesion = sesionData.session;
+
+    if (!sesion) {
+      decir("Cita actualizada, pero debes iniciar sesión para enviar el aviso.");
+      await cargarReservas();
+      return;
+    }
+
+    try {
+      const respuesta = await fetch(
+        "https://omptefmybwlhehgixkwa.supabase.co/functions/v1/notificar-cita",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + sesion.access_token,
+            "apikey": "sb_publishable_2CWnYeLNuhix-vM4uRg2KA__1Clvgnf"
+          },
+          body: JSON.stringify({
+            reserva_id: id,
+            estado: nuevoEstado
+          })
+        }
+      );
+
+      const resultado = await respuesta.json();
+
+      if (!respuesta.ok) {
+        console.error("Aviso no enviado:", resultado);
+        decir(
+          "Cita actualizada, pero falta configurar el aviso al cliente."
+        );
+      } else {
+        decir("Cita actualizada y aviso enviado.");
+      }
+    } catch (errorAviso) {
+      console.error(errorAviso);
+      decir("Cita actualizada, pero no se pudo enviar el aviso.");
+    }
+
     await cargarReservas();
+  } catch (error) {
+    console.error(error);
+    decir("Ocurrió un error al actualizar la cita.");
+    boton.disabled = false;
+    otroBoton.disabled = false;
   }
+}
 
   document.getElementById("formLogin")
     .addEventListener("submit", async evento => {
