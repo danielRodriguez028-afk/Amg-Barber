@@ -570,7 +570,7 @@ window.amgOneSignalReady = new Promise((resolve) => {
 
     try {
       
-const OneSignal = await window.amgOneSignalReady;
+const OneSignal = window.amgOneSignal || null;
 
 let idSuscripcion = null;
 
