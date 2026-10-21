@@ -18,7 +18,8 @@ window.amgOneSignalReady = new Promise((resolve) => {
       });
 
       window.amgOneSignal = OneSignal;
-
+      resolve(OneSignal);
+      
       await OneSignal.Slidedown.promptPush();
 
       console.log(
@@ -570,7 +571,9 @@ window.amgOneSignalReady = new Promise((resolve) => {
 
     try {
       
-const OneSignal = window.amgOneSignal || null;
+const OneSignal =
+  window.amgOneSignal ||
+  await window.amgOneSignalReady;
 
 let idSuscripcion = null;
 
