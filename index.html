@@ -578,9 +578,14 @@ let idSuscripcion = null;
 if (OneSignal) {
   const suscripcion = OneSignal.User.PushSubscription;
 
-  if (suscripcion.optedIn) {
-    idSuscripcion = suscripcion.id || null;
-  }
+if (OneSignal) {
+  const suscripcion = OneSignal.User.PushSubscription;
+
+  await suscripcion.optIn();
+
+  idSuscripcion = suscripcion.id || null;
+
+  console.log("ID de suscripción:", idSuscripcion);
 }
 
 const { data, error } = await clienteSupabase.rpc(
