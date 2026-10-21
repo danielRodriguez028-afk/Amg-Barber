@@ -18,19 +18,18 @@ window.amgOneSignalReady = new Promise((resolve) => {
       });
 
       window.amgOneSignal = OneSignal;
-      resolve(OneSignal);
-      
-      await OneSignal.Slidedown.promptPush();
+resolve(OneSignal);
 
-      console.log(
-        "Suscripción OneSignal:",
-        OneSignal.User.PushSubscription.id
-      );
-      
-    } catch (error) {
-      console.error("Error al iniciar OneSignal:", error);
-      resolve(null);
-    }
+await OneSignal.Slidedown.promptPush();
+
+console.log(
+  "Suscripción OneSignal:",
+  OneSignal.User.PushSubscription.id
+);
+} catch (error) {
+  console.error("Error al iniciar OneSignal:", error);
+  resolve(null);
+}
   });
 });
 </script>
