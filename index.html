@@ -395,50 +395,113 @@ console.log(
   overflow-wrap: anywhere;
 }
 
+
+/* TARJETA DE FIDELIDAD AMG BARBER */
 .tarjeta-cortes {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin: 22px 0;
+  gap: 12px;
+  margin: 24px 0;
+  padding: 22px 16px;
+  overflow: hidden;
+  border: 1px solid #8e9297;
+  border-radius: 5px;
+  background:
+    radial-gradient(ellipse at 50% 0%, #292929 0%, transparent 65%),
+    linear-gradient(145deg, #171717, #050505 65%, #191919);
+  box-shadow:
+    inset 0 0 0 4px #101010,
+    inset 0 0 0 5px #414141,
+    0 12px 30px #0009;
+}
+
+.tarjeta-cortes::before {
+  content: "AMG BARBER";
+  grid-column: 1 / -1;
+  display: block;
+  padding: 2px 0 13px;
+  border-bottom: 1px solid #555;
+  color: #e5e5e5;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  text-align: center;
 }
 
 .corte-casilla {
-  min-height: 82px;
+  position: relative;
+  min-width: 0;
+  min-height: 75px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 7px;
-  border: 1px solid var(--borde);
-  border-radius: 10px;
-  color: var(--gris);
-  background: #080808;
+  gap: 6px;
+  border: 1px solid #55595d;
+  border-radius: 50%;
+  color: #aaa;
+  background: linear-gradient(145deg, #202020, #080808);
   text-align: center;
-  font-size: 12px;
+  font-size: 10px;
+  box-shadow: inset 0 1px 4px #ffffff0a;
+  transition: border-color .25s, background .25s, color .25s;
 }
 
 .corte-casilla .simbolo {
   font-size: 25px;
+  line-height: 1;
+  filter: grayscale(1);
 }
 
 .corte-casilla.completado {
-  border-color: var(--dorado);
-  color: var(--dorado);
-  background: #211a10;
+  border-color: #d5b875;
+  color: #f0d79b;
+  background: radial-gradient(circle, #40331d, #111 75%);
+  box-shadow:
+    inset 0 0 0 2px #d5b87520,
+    0 0 12px #d5b87518;
+}
+
+.corte-casilla.completado .simbolo {
+  filter: none;
 }
 
 .premios-fidelidad {
-  padding: 14px;
-  border: 1px solid var(--borde);
-  border-radius: 9px;
-  margin-top: 12px;
-  line-height: 1.7;
+  padding: 16px;
+  border: 1px solid #777;
+  border-radius: 4px;
+  margin-top: 14px;
+  color: #ddd;
+  background: linear-gradient(135deg, #171717, #080808);
+  line-height: 1.8;
   font-size: 13px;
 }
 
-@media (max-width: 350px) {
-  .fidelidad-acciones {
-    grid-template-columns: 1fr;
+.premios-fidelidad strong {
+  color: #e1c78d;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+@media (max-width: 380px) {
+  .tarjeta-cortes {
+    gap: 8px;
+    padding: 18px 10px;
+  }
+
+  .corte-casilla {
+    min-height: 62px;
+    font-size: 9px;
+  }
+
+  .corte-casilla .simbolo {
+    font-size: 21px;
+  }
+
+  .tarjeta-cortes::before {
+    font-size: 16px;
+    letter-spacing: 3px;
   }
 }
     
