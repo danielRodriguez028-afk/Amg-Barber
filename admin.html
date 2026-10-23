@@ -155,138 +155,294 @@
     }
   }
 
-  async function cargarReservas() {
-    lista.replaceChildren();
-    decir("Cargando citas...");
+  
+async function cargarReservas() {
+  lista.replaceChildren();
+  decir("Cargando citas...");
 
-    const { data, error } = await db
-      .from("reservas")
-      .select("id,nombre,telefono,servicio,fecha,hora,estado")
-      .order("fecha", { ascending: true })
-      .order("hora", { ascending: true });
+  const { data, error } = await db
+    .from("reservas")
+    .select("id,nombre,telefono,servicio,fecha,hora,estado")
+    .order("fecha", { ascending: true })
+    .order("hora", { ascending: true });
 
-    if (error) {
-      console.error(error);
-      decir("No se pudieron cargar las citas. Comprueba tu sesión y los permisos.");
+  if (error) {
+    console.error(error);
+    decir("No se pudieron cargar las citas. Comprueba tu sesión y los permisos.");
+    return;
+  }
+
+  decir(data.length
+    ? "Citas encontradas: " + data.length
+    : "Todavía no hay citas.");
+
+  data.forEach(cita => {
+    const tarjeta = document.createElement("article");
+    tarjeta.className = "card";
+
+    tarjeta.innerHTML = `
+      <h2>${escapar(cita.nombre)}</h2>
+      <p>Teléfono: ${escapar(cita.telefono)}</p>
+      <p>Servicio: ${escapar(cita.servicio)}</p>
+      <p>Fecha: ${escapar(cita.fecha)}</p>
+      <p>Hora: ${escapar(String(cita.hora).slice(0, 5))}</p>
+      <p>Estado: <span class="status">${escapar(cita.estado)}</span></p>
+    `;
+
+    const acciones = document.createElement("div");
+    acciones.className = "actions";
+
+    if (cita.estado === "pendiente") {
+      const confirmar = document.createElement("button");
+      confirmar.textContent = "Confirmar";
+      confirmar.addEventListener("click", () =>
+        cambiarEstado(cita.id, "confirmada", cita.estado)
+      );
+      acciones.appendChild(confirmar);
+    }
+
+    if (cita.estado === "pendiente" || cita.estado === "confirmada") {
+      const reagendar = document.createElement("button");
+      reagendar.textContent = "Reagendar";
+      reagendar.className = "secondary";
+      reagendar.addEventListener("click", () =>
+        mostrarFormularioReagendar(cita, tarjeta)
+      );
+      acciones.appendChild(reagendar);
+
+      const cancelar = document.createElement("button");
+      cancelar.textContent = "Cancelar cita";
+      cancelar.className = "cancel";
+      cancelar.addEventListener("click", () =>
+        cambiarEstado(cita.id, "cancelada", cita.estado)
+      );
+      acciones.appendChild(cancelar);
+    }
+
+    if (cita.estado === "cancelada") {
+      const restaurar = document.createElement("button");
+      restaurar.textContent = "Restaurar cita";
+      restaurar.addEventListener("click", () =>
+        restaurarCita(cita)
+      );
+      acciones.appendChild(restaurar);
+    }
+
+    if (acciones.childElementCount) {
+      tarjeta.appendChild(acciones);
+    }
+
+    lista.appendChild(tarjeta);
+  });
+}
+
+function mostrarFormularioReagendar(cita, tarjeta) {
+  const anterior = tarjeta.querySelector(".form-reagendar");
+
+  if (anterior) {
+    anterior.remove();
+    return;
+  }
+
+  const formulario = document.createElement("form");
+  formulario.className = "form-reagendar";
+  formulario.style.marginTop = "16px";
+
+  const etiquetaFecha = document.createElement("label");
+  etiquetaFecha.textContent = "Nueva fecha";
+
+  const fecha = document.createElement("input");
+  fecha.type = "date";
+  fecha.required = true;
+  fecha.value = cita.fecha;
+
+  const etiquetaHora = document.createElement("label");
+  etiquetaHora.textContent = "Nueva hora";
+
+  const hora = document.createElement("input");
+  hora.type = "time";
+  hora.required = true;
+  hora.value = String(cita.hora).slice(0, 5);
+
+  const guardar = document.createElement("button");
+  guardar.type = "submit";
+  guardar.textContent = "Guardar nueva cita";
+
+  const cerrar = document.createElement("button");
+  cerrar.type = "button";
+  cerrar.textContent = "No cambiar";
+  cerrar.className = "secondary";
+  cerrar.addEventListener("click", () => formulario.remove());
+
+  formulario.append(
+    etiquetaFecha, fecha,
+    etiquetaHora, hora,
+    guardar, cerrar
+  );
+
+  formulario.addEventListener("submit", async evento => {
+    evento.preventDefault();
+
+    if (!fecha.value || !hora.value) {
+      alert("Selecciona una fecha y una hora.");
       return;
     }
 
-    decir(data.length
-      ? "Citas encontradas: " + data.length
-      : "Todavía no hay citas.");
+    const dia = new Date(fecha.value + "T12:00:00").getDay();
 
-    data.forEach(cita => {
-      const tarjeta = document.createElement("article");
-      tarjeta.className = "card";
+    if (dia === 4) {
+      alert("La barbería cierra los jueves. Elige otro día.");
+      return;
+    }
 
-      tarjeta.innerHTML = `
-        <h2>${escapar(cita.nombre)}</h2>
-        <p>Teléfono: ${escapar(cita.telefono)}</p>
-        <p>Servicio: ${escapar(cita.servicio)}</p>
-        <p>Fecha: ${escapar(cita.fecha)}</p>
-        <p>Hora: ${escapar(String(cita.hora).slice(0, 5))}</p>
-        <p>Estado: <span class="status">${escapar(cita.estado)}</span></p>
-      `;
+    if (hora.value < "11:00" || hora.value >= "20:00") {
+      alert("El horario de atención es de 11:00 a 20:00.");
+      return;
+    }
 
-      if (cita.estado === "pendiente") {
-        const acciones = document.createElement("div");
-        acciones.className = "actions";
+    guardar.disabled = true;
+    await reagendarCita(cita, fecha.value, hora.value);
+    guardar.disabled = false;
+  });
 
-        const confirmar = document.createElement("button");
-        confirmar.textContent = "Confirmar";
-        confirmar.addEventListener("click", () =>
-          cambiarEstado(cita.id, "confirmada", confirmar, cancelar)
-        );
+  tarjeta.appendChild(formulario);
+}
 
-        const cancelar = document.createElement("button");
-        cancelar.textContent = "Cancelar cita";
-        cancelar.className = "cancel";
-        cancelar.addEventListener("click", () =>
-          cambiarEstado(cita.id, "cancelada", cancelar, confirmar)
-        );
+async function reagendarCita(cita, nuevaFecha, nuevaHora) {
+  try {
+    const { data, error } = await db
+      .from("reservas")
+      .update({
+        fecha: nuevaFecha,
+        hora: nuevaHora
+      })
+      .eq("id", cita.id)
+      .eq("estado", cita.estado)
+      .select("id");
 
-        acciones.append(confirmar, cancelar);
-        tarjeta.appendChild(acciones);
+    if (error) {
+      console.error("Error al reagendar:", error);
+
+      if (
+        error.code === "23505" ||
+        (error.message || "").includes("reservas_horario_activo")
+      ) {
+        alert("Ese horario ya está ocupado. Prueba con otra hora.");
+      } else {
+        alert("No se pudo reagendar la cita. Comprueba los permisos.");
       }
+      return;
+    }
 
-      lista.appendChild(tarjeta);
-    });
+    if (!data || data.length === 0) {
+      alert("La cita cambió o ya fue modificada. Actualiza la lista.");
+      return;
+    }
+
+    await cargarReservas();
+    alert(
+      "Cita reagendada correctamente. Recuerda avisar al cliente: " +
+      "el aviso automático del cambio de horario aún no está configurado."
+    );
+  } catch (error) {
+    console.error(error);
+    alert("Ocurrió un error al reagendar la cita.");
+  }
+}
+
+async function restaurarCita(cita) {
+  if (!confirm(
+    "¿Restaurar la cita de " + cita.nombre +
+    " como pendiente de confirmación?"
+  )) {
+    return;
   }
 
-  
-async function cambiarEstado(id, nuevoEstado, boton, otroBoton) {
+  const { data, error } = await db
+    .from("reservas")
+    .update({ estado: "pendiente" })
+    .eq("id", cita.id)
+    .eq("estado", "cancelada")
+    .select("id");
+
+  if (error) {
+    console.error("Error al restaurar:", error);
+
+    if (
+      error.code === "23505" ||
+      (error.message || "").includes("reservas_horario_activo")
+    ) {
+      alert(
+        "No se puede restaurar esa cita porque su horario ya está ocupado. " +
+        "Reagenda la cita a un horario libre."
+      );
+    } else {
+      alert("No se pudo restaurar la cita. Comprueba los permisos.");
+    }
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    alert("La cita ya cambió de estado. Actualiza la lista.");
+    return;
+  }
+
+  await cargarReservas();
+  alert("Cita restaurada como pendiente de confirmación.");
+}
+
+async function cambiarEstado(id, nuevoEstado, estadoActual) {
   if (!confirm("¿Quieres cambiar el estado a " + nuevoEstado + "?")) {
     return;
   }
 
-  boton.disabled = true;
-  otroBoton.disabled = true;
+  const { data, error } = await db
+    .from("reservas")
+    .update({ estado: nuevoEstado })
+    .eq("id", id)
+    .eq("estado", estadoActual)
+    .select("id");
 
-  try {
-    const { data, error } = await db
-      .from("reservas")
-      .update({ estado: nuevoEstado })
-      .eq("id", id)
-      .eq("estado", "pendiente")
-      .select("id");
+  if (error || !data || data.length === 0) {
+    console.error(error);
+    decir("No se pudo actualizar la cita. Comprueba su estado y los permisos.");
+    return;
+  }
 
-    if (error || !data || data.length === 0) {
-      console.error(error);
-      decir("No se pudo actualizar la cita. Revisa los permisos o su estado.");
-      boton.disabled = false;
-      otroBoton.disabled = false;
-      return;
-    }
-
-    const { data: sesionData } = await db.auth.getSession();
-    const sesion = sesionData.session;
-
-    if (!sesion) {
-      decir("Cita actualizada, pero debes iniciar sesión para enviar el aviso.");
-      await cargarReservas();
-      return;
-    }
-
+  if (nuevoEstado === "confirmada" || nuevoEstado === "cancelada") {
     try {
-      const respuesta = await fetch(
-        "https://omptefmybwlhehgixkwa.supabase.co/functions/v1/notificar-cita",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + sesion.access_token,
-            "apikey": "sb_publishable_2CWnYeLNuhix-vM4uRg2KA__1Clvgnf"
-          },
-          body: JSON.stringify({
-            reserva_id: id,
-            estado: nuevoEstado
-          })
-        }
-      );
+      const { data: sesionData } = await db.auth.getSession();
+      const sesion = sesionData.session;
 
-      const resultado = await respuesta.json();
-
-      if (!respuesta.ok) {
-        console.error("Aviso no enviado:", resultado);
-        decir(
-          "Cita actualizada, pero falta configurar el aviso al cliente."
+      if (sesion) {
+        const respuesta = await fetch(
+          "https://omptefmybwlhehgixkwa.supabase.co/functions/v1/notificar-cita",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + sesion.access_token,
+              "apikey": "sb_publishable_2CWnYeLNuhix-vM4uRg2KA__1Clvgnf"
+            },
+            body: JSON.stringify({
+              reserva_id: id,
+              estado: nuevoEstado
+            })
+          }
         );
-      } else {
-        decir("Cita actualizada y aviso enviado.");
+
+        if (!respuesta.ok) {
+          console.error("La función de notificación devolvió un error.");
+        }
       }
     } catch (errorAviso) {
-      console.error(errorAviso);
-      decir("Cita actualizada, pero no se pudo enviar el aviso.");
+      console.error("Error al enviar notificación:", errorAviso);
     }
-
-    await cargarReservas();
-  } catch (error) {
-    console.error(error);
-    decir("Ocurrió un error al actualizar la cita.");
-    boton.disabled = false;
-    otroBoton.disabled = false;
   }
+
+  await cargarReservas();
 }
+
 
   document.getElementById("formLogin")
     .addEventListener("submit", async evento => {
