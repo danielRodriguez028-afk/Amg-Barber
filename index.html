@@ -849,5 +849,237 @@ if ("serviceWorker" in navigator) {
   });
 </script>
 
+<script>
+(() => {
+  const acceso = document.getElementById("fidelidadAcceso");
+  const cuenta = document.getElementById("fidelidadCuenta");
+  const mensaje = document.getElementById("mensajeFidelidad");
+
+  if (!acceso || !cuenta || !mensaje) return;
+
+  function mostrarMensaje(texto) {
+    mensaje.textContent = texto;
+  }
+
+  function cambiarBoton(formulario, texto, desactivado) {
+    const boton = formulario.querySelector('button[type="submit"]');
+    if (boton) {
+      if (!boton.dataset.textoOriginal) {
+        boton.dataset.textoOriginal = boton.textContent;
+      }
+      boton.textContent = texto || boton.dataset.textoOriginal;
+      boton.disabled = desactivado;
+    }
+  }
+
+  async function cargarTarjeta(usuario) {
+    const bienvenida = document.getElementById("fidelidadBienvenida");
+    const casillas = document.getElementById("casillasCortes");
+    const premios = document.getElementById("premiosFidelidad");
+    const historial = document.getElementById("historialFidelidad");
+
+    acceso.hidden = true;
+    cuenta.hidden = false;
+    bienvenida.textContent = "Tu cuenta de AMG BARBER";
+    casillas.textContent = "";
+    premios.textContent = "Cargando...";
+    historial.textContent = "";
+
+    const { data: perfil, error: errorPerfil } =
+      await clienteSupabase
+        .from("clientes_perfiles")
+        .select("nombre_usuario")
+        .eq("user_id", usuario.id)
+        .maybeSingle();
+
+    if (errorPerfil) {
+      mostrarMensaje("No pudimos cargar tu perfil. Intenta actualizar la página.");
+      return;
+    }
+
+    bienvenida.textContent =
+      "¡Hola, " + (perfil?.nombre_usuario || "cliente") + "!";
+
+    const { data: tarjeta, error: errorTarjeta } =
+      await clienteSupabase
+        .from("clientes_tarjetas")
+        .select("cortes_completados, skincare_pendientes, descuentos_pendientes")
+        .eq("cliente_id", usuario.id)
+        .maybeSingle();
+
+    if (errorTarjeta || !tarjeta) {
+      premios.textContent = "No pudimos cargar tu tarjeta.";
+      mostrarMensaje("Tu sesión está iniciada, pero no pudimos consultar la tarjeta.");
+      return;
+    }
+
+    const cortes = tarjeta.cortes_completados || 0;
+    const descuentos = tarjeta.descuentos_pendientes || 0;
+
+    for (let i = 1; i <= 8; i++) {
+      const casilla = document.createElement("div");
+      casilla.className = "corte-casilla";
+
+      const simbolo = document.createElement("span");
+      simbolo.className = "simbolo";
+
+      const texto = document.createElement("span");
+
+      if (i <= 6) {
+        simbolo.textContent = "🐍";
+        texto.textContent = "Corte " + i;
+        if (i <= cortes) casilla.classList.add("completado");
+      } else if (i === 7) {
+        simbolo.textContent = "✨";
+        texto.textContent = "Skincare";
+        if (cortes >= 7) casilla.classList.add("completado");
+      } else {
+        simbolo.textContent = "％";
+        texto.textContent = "50% desc.";
+        if (descuentos > 0) casilla.classList.add("completado");
+      }
+
+      casilla.append(simbolo, texto);
+      casillas.appendChild(casilla);
+    }
+
+    premios.textContent =
+      "Sesiones de skincare disponibles: " +
+      (tarjeta.skincare_pendientes || 0) +
+      ". Descuentos del 50% disponibles: " +
+      descuentos +
+      ".";
+
+    const { data: movimientos, error: errorMovimientos } =
+      await clienteSupabase
+        .from("clientes_movimientos")
+        .select("tipo, detalle, created_at")
+        .eq("cliente_id", usuario.id)
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+    if (errorMovimientos) {
+      historial.textContent = "No pudimos cargar el historial.";
+    } else if (!movimientos || movimientos.length === 0) {
+      historial.textContent = "Todavía no tienes cortes registrados.";
+    } else {
+      historial.textContent =
+        "Movimientos recientes: " +
+        movimientos.map(m => {
+          if (m.tipo === "corte_completado") return "Corte completado";
+          if (m.tipo === "skincare_canjeado") return "Skincare canjeado";
+          if (m.tipo === "descuento_canjeado") return "Descuento canjeado";
+          return m.detalle || m.tipo;
+        }).join(" · ");
+    }
+
+    mostrarMensaje("");
+  }
+
+  async function comprobarSesion() {
+    const { data, error } = await clienteSupabase.auth.getSession();
+
+    if (error) {
+      mostrarMensaje("No pudimos comprobar tu sesión.");
+      return;
+    }
+
+    if (data.session) {
+      await cargarTarjeta(data.session.user);
+    } else {
+      acceso.hidden = false;
+      cuenta.hidden = true;
+    }
+  }
+
+  const registro = document.getElementById("registroFidelidad");
+
+  registro.addEventListener("submit", async evento => {
+    evento.preventDefault();
+    cambiarBoton(registro, "Creando cuenta...", true);
+    mostrarMensaje("");
+
+    try {
+      const usuario = document.getElementById("usuarioFidelidad").value.trim();
+      const correo = document.getElementById("correoRegistro").value.trim();
+      const contrasena = document.getElementById("contrasenaRegistro").value;
+
+      const { data, error } = await clienteSupabase.auth.signUp({
+        email: correo,
+        password: contrasena,
+        options: {
+          data: { nombre_usuario: usuario }
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.session && data.user) {
+        await cargarTarjeta(data.user);
+        registro.reset();
+        mostrarMensaje("¡Cuenta creada correctamente!");
+      } else {
+        mostrarMensaje(
+          "Cuenta creada. Inicia sesión para entrar a tu tarjeta."
+        );
+      }
+    } catch (error) {
+      console.error("Error al registrar:", error);
+      mostrarMensaje("No se pudo crear la cuenta: " + error.message);
+    } finally {
+      cambiarBoton(registro, "", false);
+    }
+  });
+
+  const login = document.getElementById("inicioSesionFidelidad");
+
+  login.addEventListener("submit", async evento => {
+    evento.preventDefault();
+    cambiarBoton(login, "Iniciando sesión...", true);
+    mostrarMensaje("");
+
+    try {
+      const correo = document.getElementById("correoLogin").value.trim();
+      const contrasena = document.getElementById("contrasenaLogin").value;
+
+      const { data, error } =
+        await clienteSupabase.auth.signInWithPassword({
+          email: correo,
+          password: contrasena
+        });
+
+      if (error) throw error;
+
+      await cargarTarjeta(data.user);
+      login.reset();
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      mostrarMensaje("No se pudo iniciar sesión. Revisa tu correo y contraseña.");
+    } finally {
+      cambiarBoton(login, "", false);
+    }
+  });
+
+  document.getElementById("cerrarSesionFidelidad")
+    .addEventListener("click", async () => {
+      const { error } = await clienteSupabase.auth.signOut();
+
+      if (error) {
+        mostrarMensaje("No se pudo cerrar la sesión.");
+        return;
+      }
+
+      cuenta.hidden = true;
+      acceso.hidden = false;
+      mostrarMensaje("Sesión cerrada correctamente.");
+    });
+
+  comprobarSesion().catch(error => {
+    console.error("Error al comprobar sesión:", error);
+    mostrarMensaje("No pudimos cargar la cuenta.");
+  });
+})();
+</script>
+  
 </body>
 </html>
