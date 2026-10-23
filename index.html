@@ -442,6 +442,51 @@ console.log(
   }
 }
     
+/* Pantalla completa de fidelidad */
+#fidelidad {
+  display: none;
+}
+
+body.modo-fidelidad .hero,
+body.modo-fidelidad main,
+body.modo-fidelidad #servicios,
+body.modo-fidelidad #reservar,
+body.modo-fidelidad footer {
+  display: none !important;
+}
+
+body.modo-fidelidad #fidelidad {
+  display: block !important;
+  width: 100%;
+  max-width: 900px;
+  min-height: 65vh;
+  margin: 24px auto;
+  padding: 28px;
+  border-color: var(--dorado);
+}
+
+body.modo-fidelidad #fidelidad h2 {
+  font-size: 28px;
+}
+
+body.modo-fidelidad #fidelidadAcceso {
+  max-width: 520px;
+  margin: 24px auto 0;
+}
+
+body.modo-fidelidad #fidelidadCuenta {
+  max-width: 700px;
+  margin: 24px auto 0;
+}
+
+@media (max-width: 600px) {
+  body.modo-fidelidad #fidelidad {
+    width: calc(100% - 20px);
+    margin: 12px auto;
+    padding: 18px;
+  }
+}
+
   </style>
 </head>
 
@@ -1078,6 +1123,46 @@ if ("serviceWorker" in navigator) {
     console.error("Error al comprobar sesión:", error);
     mostrarMensaje("No pudimos cargar la cuenta.");
   });
+})();
+</script>
+  
+<script>
+(() => {
+  const enlaces = document.querySelectorAll("nav a");
+
+  function mostrarPantalla(destino) {
+    const esFidelidad = destino === "#fidelidad";
+
+    document.body.classList.toggle("modo-fidelidad", esFidelidad);
+
+    if (esFidelidad) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      const seccion = document.querySelector(destino);
+
+      if (seccion) {
+        seccion.scrollIntoView({ behavior: "smooth" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  }
+
+  enlaces.forEach(enlace => {
+    enlace.addEventListener("click", evento => {
+      const destino = enlace.getAttribute("href");
+
+      if (!destino || !destino.startsWith("#")) return;
+
+      evento.preventDefault();
+      mostrarPantalla(destino);
+      history.replaceState(null, "", destino);
+    });
+  });
+
+  if (window.location.hash === "#fidelidad") {
+    document.body.classList.add("modo-fidelidad");
+  }
 })();
 </script>
   
