@@ -360,6 +360,88 @@ console.log(
   }
 }
 
+
+/* Tarjeta de fidelidad */
+#fidelidad {
+  scroll-margin-top: 20px;
+}
+
+.fidelidad-formulario {
+  display: grid;
+  gap: 10px;
+}
+
+.fidelidad-formulario .boton {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.fidelidad-acciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.fidelidad-acciones .boton {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px 8px;
+}
+
+.fidelidad-estado {
+  color: var(--gris);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.tarjeta-cortes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0;
+}
+
+.corte-casilla {
+  min-height: 82px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  color: var(--gris);
+  background: #080808;
+  text-align: center;
+  font-size: 12px;
+}
+
+.corte-casilla .simbolo {
+  font-size: 25px;
+}
+
+.corte-casilla.completado {
+  border-color: var(--dorado);
+  color: var(--dorado);
+  background: #211a10;
+}
+
+.premios-fidelidad {
+  padding: 14px;
+  border: 1px solid var(--borde);
+  border-radius: 9px;
+  margin-top: 12px;
+  line-height: 1.7;
+  font-size: 13px;
+}
+
+@media (max-width: 350px) {
+  .fidelidad-acciones {
+    grid-template-columns: 1fr;
+  }
+}
+    
   </style>
 </head>
 
@@ -372,12 +454,12 @@ console.log(
   </header>
 
   <nav>
-    <a href="#inicio">Inicio</a>
-    <a href="#servicios">Servicios</a>
-    <a href="#reservar">Reservar cita</a>
-  </nav>
+  <a href="#inicio">Inicio</a>
+  <a href="#servicios">Servicios</a>
+  <a href="#reservar">Reservar cita</a>
+  <a href="#fidelidad">Fidelidad</a>
+</nav>
 
-  
 <section class="hero">
   <div class="hero-contenido">
     <div class="etiqueta">
@@ -528,6 +610,120 @@ console.log(
       </p>
     </section>
   </main>
+
+<section class="panel" id="fidelidad">
+  <h2>Tarjeta de fidelidad</h2>
+
+  <p class="descripcion">
+    Registra tu cuenta para consultar tus cortes y los premios
+    que hayas conseguido en AMG BARBER.
+  </p>
+
+  <div id="fidelidadAcceso">
+    <form id="registroFidelidad" class="fidelidad-formulario">
+      <h3>Crear cuenta</h3>
+
+      <label for="usuarioFidelidad">Nombre de usuario</label>
+      <input
+        id="usuarioFidelidad"
+        type="text"
+        minlength="3"
+        maxlength="30"
+        autocomplete="username"
+        placeholder="Tu nombre de usuario"
+        required
+      >
+
+      <label for="correoRegistro">Correo electrónico</label>
+      <input
+        id="correoRegistro"
+        type="email"
+        autocomplete="email"
+        placeholder="tu@correo.com"
+        required
+      >
+
+      <label for="contrasenaRegistro">Contraseña</label>
+      <input
+        id="contrasenaRegistro"
+        type="password"
+        minlength="8"
+        autocomplete="new-password"
+        placeholder="Mínimo 8 caracteres"
+        required
+      >
+
+      <button class="boton" type="submit">
+        CREAR CUENTA
+      </button>
+    </form>
+
+    <div style="border-top:1px solid var(--borde);margin:24px 0;"></div>
+
+    <form id="inicioSesionFidelidad" class="fidelidad-formulario">
+      <h3>Ya tengo una cuenta</h3>
+
+      <label for="correoLogin">Correo electrónico</label>
+      <input
+        id="correoLogin"
+        type="email"
+        autocomplete="email"
+        placeholder="tu@correo.com"
+        required
+      >
+
+      <label for="contrasenaLogin">Contraseña</label>
+      <input
+        id="contrasenaLogin"
+        type="password"
+        autocomplete="current-password"
+        placeholder="Tu contraseña"
+        required
+      >
+
+      <button class="boton" type="submit">
+        INICIAR SESIÓN
+      </button>
+    </form>
+  </div>
+
+  <div id="fidelidadCuenta" hidden>
+    <p id="fidelidadBienvenida"></p>
+
+    <div class="tarjeta-cortes" id="casillasCortes"></div>
+
+    <div class="premios-fidelidad">
+      <strong>Mis premios</strong>
+      <p id="premiosFidelidad">Cargando premios...</p>
+    </div>
+
+    <p class="fidelidad-estado" id="historialFidelidad"></p>
+
+    <button
+      class="boton"
+      id="cerrarSesionFidelidad"
+      type="button"
+    >
+      CERRAR SESIÓN
+    </button>
+  </div>
+
+  <p
+    class="fidelidad-estado"
+    id="mensajeFidelidad"
+    role="status"
+    aria-live="polite"
+  ></p>
+
+  <p class="aviso">
+    Los cortes y premios se actualizan cuando el dueño registra
+    el servicio completado. Crear una cuenta no confirma una cita.
+  </p>
+
+  <p class="aviso">
+    Instagram: @amgbarber678
+  </p>
+</section>
 
   <footer>
     <strong>AMG BARBER</strong>
