@@ -159,12 +159,11 @@
 async function cargarReservas() {
   lista.replaceChildren();
   decir("Cargando citas...");
-
-  const { data, error } = await db
-    .from("reservas")
-    .select("id,nombre,telefono,servicio,fecha,hora,estado,cliente_id")
-    .order("fecha", { ascending: true })
-    .order("hora", { ascending: true });
+  
+const { data, error } = await db
+  .from("reservas")
+  .select("id,nombre,telefono,servicio,fecha,hora,estado,cliente_id,created_at")
+  .order("created_at", { ascending: false });
 
   if (error) {
     console.error(error);
