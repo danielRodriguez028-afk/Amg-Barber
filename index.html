@@ -549,6 +549,55 @@ body.modo-fidelidad #fidelidadCuenta {
   }
 }
 
+.instalar-contenedor {
+  display: flex;
+  justify-content: center;
+  padding: 18px 12px;
+  background: #080706;
+}
+
+.boton-instalar {
+  width: 100%;
+  max-width: 340px;
+  padding: 15px 20px;
+  border: 1px solid #c6a779;
+  border-radius: 7px;
+  background: #080706;
+  color: #c6a779;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.boton-instalar:active {
+  background: #c6a779;
+  color: #080706;
+}
+
+.ayuda-instalacion {
+  margin: 12px 16px 20px;
+  padding: 22px;
+  border: 1px solid #c6a779;
+  border-radius: 12px;
+  background: #11100e;
+  color: #f5f0e8;
+  line-height: 1.7;
+}
+
+.ayuda-instalacion h2 {
+  color: #c6a779;
+}
+
+.ayuda-instalacion button {
+  padding: 12px 18px;
+  border: 1px solid #c6a779;
+  border-radius: 6px;
+  background: #c6a779;
+  color: #080706;
+  font-weight: bold;
+}
+
   </style>
 </head>
 
@@ -565,9 +614,25 @@ body.modo-fidelidad #fidelidadCuenta {
   <a href="#servicios">Servicios</a>
   <a href="#reservar">Reservar cita</a>
   <a href="#fidelidad">Fidelidad</a>
+
 </nav>
 
+<div class="instalar-contenedor">
+  <button class="boton-instalar" id="btnInstalar" type="button">
+    ↓ INSTALAR AMG BARBER
+  </button>
+</div>
+
+<div id="ayudaInstalacion" class="ayuda-instalacion" hidden>
+  <h2>Instala AMG BARBER</h2>
+  <p id="textoInstalacion"></p>
+  <button id="cerrarInstalacion" type="button">
+    ENTENDIDO
+  </button>
+</div>
+
 <section class="hero">
+
   <div class="hero-contenido">
     <div class="etiqueta">
       BARBERÍA PRIVADA · MARTÍNEZ DE LA TORRE
@@ -1235,6 +1300,51 @@ if ("serviceWorker" in navigator) {
   if (window.location.hash === "#fidelidad") {
     document.body.classList.add("modo-fidelidad");
   }
+})();
+</script>
+  
+<script>
+(() => {
+  const boton = document.getElementById("btnInstalar");
+  const ayuda = document.getElementById("ayudaInstalacion");
+  const texto = document.getElementById("textoInstalacion");
+  const cerrar = document.getElementById("cerrarInstalacion");
+
+  if (!boton || !ayuda || !texto || !cerrar) return;
+
+  boton.addEventListener("click", () => {
+    const esIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const esSafari = /Safari/i.test(navigator.userAgent) &&
+      !/CriOS|FxiOS|EdgiOS|OPiOS/i.test(navigator.userAgent);
+    const instalada = window.matchMedia(
+      "(display-mode: standalone)"
+    ).matches || navigator.standalone === true;
+
+    if (instalada) {
+      texto.textContent =
+        "¡AMG BARBER ya está instalada en tu dispositivo!";
+    } else if (esIOS && esSafari) {
+      texto.textContent =
+        "1. Pulsa Compartir en Safari (el cuadrado con la flecha hacia arriba). " +
+        "2. Selecciona Añadir a pantalla de inicio. " +
+        "3. Pulsa Añadir. ¡Listo!";
+    } else if (esIOS) {
+      texto.textContent =
+        "Abre esta página en Safari. Después pulsa Compartir, " +
+        "selecciona Añadir a pantalla de inicio y pulsa Añadir.";
+    } else {
+      texto.textContent =
+        "Abre el menú de tu navegador y busca Instalar aplicación " +
+        "o Añadir a pantalla de inicio. La opción depende del dispositivo.";
+    }
+
+    ayuda.hidden = false;
+    ayuda.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  cerrar.addEventListener("click", () => {
+    ayuda.hidden = true;
+  });
 })();
 </script>
   
