@@ -162,7 +162,7 @@ async function cargarReservas() {
 
   const { data, error } = await db
     .from("reservas")
-    .select("id,nombre,telefono,servicio,fecha,hora,estado")
+    .select("id,nombre,telefono,servicio,fecha,hora,estado,cliente_id")
     .order("fecha", { ascending: true })
     .order("hora", { ascending: true });
 
@@ -200,7 +200,49 @@ async function cargarReservas() {
       );
       acciones.appendChild(confirmar);
     }
+    
+if (cita.estado === "confirmada") {
+  const completar = document.createElement("button");
+  completar.textContent = "Completar cita";
 
+  completar.addEventListener("click", async () => {
+    const mensaje = cita.cliente_id
+      ? "¿Confirmas que el cliente terminó su corte? Se registrará en su tarjeta de fidelidad."
+      : "¿Confirmas que esta cita terminó? No tiene una cuenta vinculada para sumar fidelidad.";
+
+    if (!confirm(mensaje)) return;
+
+    completar.disabled = true;
+    completar.textContent = "Procesando...";
+
+    try {
+      const { data, error } = await db.rpc(
+        "completar_reserva_con_fidelidad",
+        { p_reserva_id: cita.id }
+      );
+
+      if (error) throw error;
+
+      if (data && data.exito) {
+        alert(data.mensaje || "Cita completada correctamente.");
+        await cargarReservas();
+      } else {
+        throw new Error("No se pudo completar la cita.");
+      }
+    } catch (error) {
+      console.error("Error al completar la cita:", error);
+      alert(
+        "No se pudo completar la cita: " +
+        (error.message || "Error desconocido")
+      );
+      completar.disabled = false;
+      completar.textContent = "Completar cita";
+    }
+  });
+
+  acciones.appendChild(completar);
+}
+    
     if (cita.estado === "pendiente" || cita.estado === "confirmada") {
       const reagendar = document.createElement("button");
       reagendar.textContent = "Reagendar";
