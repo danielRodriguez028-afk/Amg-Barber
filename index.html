@@ -883,17 +883,27 @@ body.modo-fidelidad #fidelidadCuenta {
       }
     }
 
-    const { data, error } = await clienteSupabase.rpc(
-      "crear_reserva_con_id",
-      {
-        p_nombre: document.getElementById("nombre").value.trim(),
-        p_telefono: document.getElementById("telefono").value.trim(),
-        p_servicio: document.getElementById("servicio").value,
-        p_fecha: fecha.value,
-        p_hora: document.getElementById("hora").value,
-        p_onesignal_subscription_id: idSuscripcion
-      }
-    );
+    const { data: sesionData } = await clienteSupabase.auth.getUser();
+const usuarioActual = sesionData?.user || null;
+
+const nombre = document.getElementById("nombre").value.trim();
+const telefono = document.getElementById("telefono").value.trim();
+const servicio = document.getElementById("servicio").value;
+const fechaCita = fecha.value;
+const horaCita = document.getElementById("hora").value;
+
+const parametros = {
+  p_nombre: nombre,
+  p_telefono: telefono,
+  p_servicio: servicio,
+  p_fecha: fechaCita,
+  p_hora: horaCita,
+  p_onesignal_subscription_id: idSuscripcion
+};
+
+const { data, error } = usuarioActual
+  ? await clienteSupabase.rpc("crear_reserva_con_cliente", parametros)
+  : await clienteSupabase.rpc("crear_reserva_con_id", parametros);
 
     if (error) {
       console.error("Error al guardar la cita:", error);
