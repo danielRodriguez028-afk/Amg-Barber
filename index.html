@@ -598,6 +598,63 @@ body.modo-fidelidad #fidelidadCuenta {
   font-weight: bold;
 }
 
+/* GALERÍAS AMG BARBER */
+#galeria-cortes,
+#galeria-local {
+  display: none;
+  max-width: 1000px;
+  margin: 24px auto;
+  padding: 20px;
+  border: 1px solid var(--dorado);
+  border-radius: 16px;
+  background: #0b0b0b;
+  color: white;
+}
+
+body.modo-cortes #galeria-cortes,
+body.modo-local #galeria-local {
+  display: block !important;
+}
+
+body.modo-cortes .hero,
+body.modo-cortes main,
+body.modo-cortes #fidelidad,
+body.modo-cortes footer,
+body.modo-local .hero,
+body.modo-local main,
+body.modo-local #fidelidad,
+body.modo-local footer {
+  display: none !important;
+}
+
+.galeria-fotos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.galeria-fotos img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+#galeria-local .galeria-fotos img {
+  filter: brightness(1.15) contrast(1.04);
+}
+
+.btn-volver-galeria {
+  display: inline-block;
+  margin: 12px 0;
+  padding: 12px 18px;
+  border: 1px solid var(--dorado);
+  border-radius: 10px;
+  background: #111;
+  color: var(--dorado);
+  cursor: pointer;
+}
+
   </style>
 </head>
 
@@ -614,7 +671,8 @@ body.modo-fidelidad #fidelidadCuenta {
   <a href="#servicios">Servicios</a>
   <a href="#reservar">Reservar cita</a>
   <a href="#fidelidad">Fidelidad</a>
-
+  <a href="#galeria-cortes">Ver cortes AMG BARBER</a>
+  <a href="#galeria-local">Galería AMG BARBER</a>
 </nav>
 
 <div class="instalar-contenedor">
@@ -1266,24 +1324,29 @@ if ("serviceWorker" in navigator) {
 <script>
 (() => {
   const enlaces = document.querySelectorAll("nav a");
+ 
+function mostrarPantalla(destino) {
+  const esFidelidad = destino === "#fidelidad";
+  const esCortes = destino === "#galeria-cortes";
+  const esLocal = destino === "#galeria-local";
 
-  function mostrarPantalla(destino) {
-    const esFidelidad = destino === "#fidelidad";
+  document.body.classList.toggle("modo-fidelidad", esFidelidad);
+  document.body.classList.toggle("modo-cortes", esCortes);
+  document.body.classList.toggle("modo-local", esLocal);
 
-    document.body.classList.toggle("modo-fidelidad", esFidelidad);
-
-    if (esFidelidad) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      const seccion = document.querySelector(destino);
-
-      if (seccion) {
-        seccion.scrollIntoView({ behavior: "smooth" });
-      } else {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    }
+  if (esFidelidad || esCortes || esLocal) {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
   }
+
+  const seccion = document.querySelector(destino);
+
+  if (seccion) {
+    seccion.scrollIntoView({ behavior: "smooth" });
+  } else {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
 
   enlaces.forEach(enlace => {
     enlace.addEventListener("click", evento => {
@@ -1348,5 +1411,51 @@ if ("serviceWorker" in navigator) {
 })();
 </script>
   
+<!-- GALERÍA DE CORTES -->
+<section id="galeria-cortes">
+  <h2 style="color:var(--dorado);text-align:center;">CORTES AMG BARBER</h2>
+  <p style="text-align:center;">Encuentra tu próximo estilo.</p>
+  <button class="btn-volver-galeria" onclick="volverGalerias()">← Volver</button>
+
+  <div class="galeria-fotos">
+    <img src="./IMG_0980.jpeg" alt="Corte AMG BARBER 1" loading="lazy">
+    <img src="./IMG_0981.jpeg" alt="Corte AMG BARBER 2" loading="lazy">
+    <img src="./IMG_0982.jpeg" alt="Corte AMG BARBER 3" loading="lazy">
+    <img src="./IMG_0983.jpeg" alt="Corte AMG BARBER 4" loading="lazy">
+    <img src="./IMG_0984.jpeg" alt="Corte AMG BARBER 5" loading="lazy">
+    <img src="./IMG_0997.jpeg" alt="Corte AMG BARBER 6" loading="lazy">
+    <img src="./IMG_0998.jpeg" alt="Corte AMG BARBER 7" loading="lazy">
+  </div>
+</section>
+
+<!-- GALERÍA DEL LOCAL -->
+<section id="galeria-local">
+  <h2 style="color:var(--dorado);text-align:center;">CONOCE AMG BARBER</h2>
+  <p style="text-align:center;">Nuestro espacio, tu estilo.</p>
+  <button class="btn-volver-galeria" onclick="volverGalerias()">← Volver</button>
+
+  <div class="galeria-fotos">
+    <img src="./IMG_0992.jpeg" alt="Interior de AMG BARBER 1" loading="lazy">
+    <img src="./IMG_0993.jpeg" alt="Interior de AMG BARBER 2" loading="lazy">
+    <img src="./IMG_0994.jpeg" alt="Interior de AMG BARBER 3" loading="lazy">
+    <img src="./IMG_0995.jpeg" alt="Interior de AMG BARBER 4" loading="lazy">
+    <img src="./IMG_0996.jpeg" alt="Interior de AMG BARBER 5" loading="lazy">
+  </div>
+</section>
+
+<script>
+
+function volverGalerias() {
+  document.body.classList.remove(
+    "modo-cortes",
+    "modo-local",
+    "modo-fidelidad"
+  );
+  history.replaceState(null, "", "#inicio");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+</script>
+
 </body>
 </html>
