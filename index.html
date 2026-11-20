@@ -669,6 +669,98 @@ body.modo-local footer {
   cursor: pointer;
 }
 
+    /* ===== DISEÑO GALERÍA DE CORTES AMG ===== */
+
+#galeria-cortes .galeria-header-amg {
+  text-align: center;
+  padding: 25px 10px 20px;
+}
+
+#galeria-cortes .galeria-etiqueta {
+  display: inline-block;
+  color: var(--dorado);
+  letter-spacing: 5px;
+  font-size: 11px;
+  margin-bottom: 12px;
+}
+
+#galeria-cortes .galeria-header-amg h2 {
+  color: var(--dorado);
+  font-size: 27px;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+#galeria-cortes .galeria-header-amg p {
+  color: #aaa;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+#galeria-cortes .cortes-grid-amg {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+  max-width: 700px;
+  margin: 25px auto;
+}
+
+#galeria-cortes .corte-card-amg {
+  background: #111;
+  border: 1px solid rgba(217,181,104,0.28);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+#galeria-cortes .corte-imagen-amg {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+
+#galeria-cortes .corte-imagen-amg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+#galeria-cortes .corte-info-amg {
+  padding: 18px;
+}
+
+#galeria-cortes .corte-numero-amg {
+  color: var(--dorado);
+  font-size: 12px;
+  letter-spacing: 3px;
+}
+
+#galeria-cortes .corte-info-amg h3 {
+  color: white;
+  font-size: 19px;
+  margin: 10px 0;
+  letter-spacing: 1px;
+}
+
+#galeria-cortes .corte-info-amg p {
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+#galeria-cortes .btn-volver-galeria {
+  display: block;
+  margin: 10px auto 25px;
+}
+
+@media (min-width: 700px) {
+  #galeria-cortes .cortes-grid-amg {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
   </style>
 </head>
 
@@ -1425,20 +1517,98 @@ function mostrarPantalla(destino) {
 })();
 </script>
   
-<!-- GALERÍA DE CORTES -->
+<!-- GALERÍA DE CORTES AMG BARBER -->
 <section id="galeria-cortes">
-  <h2 style="color:var(--dorado);text-align:center;">CORTES AMG BARBER</h2>
-  <p style="text-align:center;">Encuentra tu próximo estilo.</p>
-  <button class="btn-volver-galeria" onclick="volverGalerias()">← Volver</button>
 
-  <div class="galeria-fotos">
-    <img src="./IMG_0980.jpeg" alt="Corte AMG BARBER 1" loading="lazy">
-    <img src="./IMG_0981.jpeg" alt="Corte AMG BARBER 2" loading="lazy">
-    <img src="./IMG_0982.jpeg" alt="Corte AMG BARBER 3" loading="lazy">
-    <img src="./IMG_0983.jpeg" alt="Corte AMG BARBER 4" loading="lazy">
-    <img src="./IMG_0984.jpeg" alt="Corte AMG BARBER 5" loading="lazy">
-    <img src="./IMG_0997.jpeg" alt="Corte AMG BARBER 6" loading="lazy">
-    <img src="./IMG_0998.jpeg" alt="Corte AMG BARBER 7" loading="lazy">
+  <div class="galeria-header-amg">
+    <span class="galeria-etiqueta">AMG BARBER</span>
+    <h2>NUESTROS ESTILOS</h2>
+    <p>Encuentra el corte que define tu personalidad.</p>
+  </div>
+
+  <button class="btn-volver-galeria" onclick="volverGalerias()">
+    ← Volver
+  </button>
+
+  <div class="cortes-grid-amg">
+
+    <article class="corte-card-amg">
+      <div class="corte-imagen-amg">
+        <img src="./IMG_0980.jpeg" alt="Corte AMG 1">
+      </div>
+      <div class="corte-info-amg">
+        <span class="corte-numero-amg">01</span>
+        <h3>NOMBRE DEL CORTE</h3>
+        <p>Descripción del estilo.</p>
+      </div>
+    </article>
+
+    <article class="corte-card-amg">
+      <div class="corte-imagen-amg">
+        <img src="./IMG_0981.jpeg" alt="Corte AMG 2">
+      </div>
+      <div class="corte-info-amg">
+        <span class="corte-numero-amg">02</span>
+        <h3>NOMBRE DEL CORTE</h3>
+        <p>Descripción del estilo.</p>
+      </div>
+    </article>
+
+    <article class="corte-card-amg">
+      <div class="corte-imagen-amg">
+        <img src="./IMG_0982.jpeg" alt="Corte AMG 3">
+      </div>
+      <div class="corte-info-amg">
+        <span class="corte-numero-amg">03</span>
+        <h3>NOMBRE DEL CORTE</h3>
+        <p>Descripción del estilo.</p>
+      </div>
+    </article>
+
+    <article class="corte-card-amg">
+      <div class="corte-imagen-amg">
+        <img src="./IMG_0983.jpeg" alt="Corte AMG 4">
+      </div>
+      <div class="corte-info-amg">
+        <span class="corte-numero-amg">04</span>
+        <h3>NOMBRE DEL CORTE</h3>
+        <p>Descripción del estilo.</p>
+      </div>
+    </article>
+
+    <article class="corte-card-amg">
+      <div class="corte-imagen-amg">
+        <img src="./IMG_0984.jpeg" alt="Corte AMG 5">
+      </div>
+      <div class="corte-info-amg">
+        <span class="corte-numero-amg">05</span>
+        <h3>NOMBRE DEL CORTE</h3>
+        <p>Descripción del estilo.</p>
+      </div>
+    </article>
+
+    <article class="corte-card-amg">
+      <div class="corte-imagen-amg">
+        <img src="./IMG_0997.jpeg" alt="Corte AMG 6">
+      </div>
+      <div class="corte-info-amg">
+        <span class="corte-numero-amg">06</span>
+        <h3>NOMBRE DEL CORTE</h3>
+        <p>Descripción del estilo.</p>
+      </div>
+    </article>
+
+    <article class="corte-card-amg">
+      <div class="corte-imagen-amg">
+        <img src="./IMG_0998.jpeg" alt="Corte AMG 7">
+      </div>
+      <div class="corte-info-amg">
+        <span class="corte-numero-amg">07</span>
+        <h3>NOMBRE DEL CORTE</h3>
+        <p>Descripción del estilo.</p>
+      </div>
+    </article>
+
   </div>
 </section>
 
