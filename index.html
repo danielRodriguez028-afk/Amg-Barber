@@ -761,6 +761,55 @@ body.modo-local footer {
   }
 }
 
+/* TARJETAS INTERACTIVAS AMG */
+#galeria-cortes .corte-card-amg {
+  width: 100%;
+  padding: 0;
+  text-align: left;
+  color: white;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+}
+
+#galeria-cortes .corte-card-amg:active {
+  transform: scale(0.98);
+}
+
+/* VISOR DE FOTOGRAFÍAS */
+#visor-corte-amg {
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 10px;
+  color: white;
+}
+
+#visor-corte-amg > button {
+  background: transparent;
+  color: var(--dorado);
+  border: 1px solid var(--dorado);
+  border-radius: 8px;
+  padding: 11px 16px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+#titulo-visor-corte {
+  color: var(--dorado);
+  text-align: center;
+  letter-spacing: 2px;
+  margin-bottom: 25px;
+}
+
+#fotos-visor-corte img {
+  display: block;
+  width: 100%;
+  max-height: 600px;
+  object-fit: contain;
+  background: #111;
+  border: 1px solid rgba(217,181,104,0.25);
+}
+    
   </style>
 </head>
 
@@ -1518,12 +1567,13 @@ function mostrarPantalla(destino) {
 </script>
   
 <!-- GALERÍA DE CORTES AMG BARBER -->
+  
 <section id="galeria-cortes">
 
   <div class="galeria-header-amg">
     <span class="galeria-etiqueta">AMG BARBER</span>
     <h2>NUESTROS ESTILOS</h2>
-    <p>Encuentra el corte que define tu personalidad.</p>
+    <p>Encuentra tu próximo estilo.</p>
   </div>
 
   <button class="btn-volver-galeria" onclick="volverGalerias()">
@@ -1532,84 +1582,74 @@ function mostrarPantalla(destino) {
 
   <div class="cortes-grid-amg">
 
-    <article class="corte-card-amg">
+    <button class="corte-card-amg" onclick="abrirGaleriaCorte('clasico')">
       <div class="corte-imagen-amg">
-        <img src="./IMG_0980.jpeg" alt="Corte AMG 1">
+        <img src="./IMG_0980.jpeg" alt="Clásico en capas">
       </div>
       <div class="corte-info-amg">
         <span class="corte-numero-amg">01</span>
-        <h3>NOMBRE DEL CORTE</h3>
-        <p>Descripción del estilo.</p>
+        <h3>CLÁSICO EN CAPAS</h3>
       </div>
-    </article>
+    </button>
 
-    <article class="corte-card-amg">
+    <button class="corte-card-amg" onclick="abrirGaleriaCorte('lowfade')">
       <div class="corte-imagen-amg">
-        <img src="./IMG_0981.jpeg" alt="Corte AMG 2">
+        <img src="./IMG_0983.jpeg" alt="Low fade">
       </div>
       <div class="corte-info-amg">
         <span class="corte-numero-amg">02</span>
-        <h3>NOMBRE DEL CORTE</h3>
-        <p>Descripción del estilo.</p>
+        <h3>LOW FADE</h3>
       </div>
-    </article>
+    </button>
 
-    <article class="corte-card-amg">
+    <button class="corte-card-amg" onclick="abrirGaleriaCorte('lowtaper')">
       <div class="corte-imagen-amg">
-        <img src="./IMG_0982.jpeg" alt="Corte AMG 3">
+        <img src="./IMG_0984.jpeg" alt="Low taper">
       </div>
       <div class="corte-info-amg">
         <span class="corte-numero-amg">03</span>
-        <h3>NOMBRE DEL CORTE</h3>
-        <p>Descripción del estilo.</p>
+        <h3>LOW TAPER</h3>
       </div>
-    </article>
+    </button>
 
-    <article class="corte-card-amg">
+    <button class="corte-card-amg" onclick="abrirGaleriaCorte('clasicotaper')">
       <div class="corte-imagen-amg">
-        <img src="./IMG_0983.jpeg" alt="Corte AMG 4">
+        <img src="./IMG_0997.jpeg" alt="Clásico más taper">
       </div>
       <div class="corte-info-amg">
         <span class="corte-numero-amg">04</span>
-        <h3>NOMBRE DEL CORTE</h3>
-        <p>Descripción del estilo.</p>
+        <h3>CLÁSICO + TAPER</h3>
       </div>
-    </article>
+    </button>
 
-    <article class="corte-card-amg">
+    <button class="corte-card-amg" onclick="abrirGaleriaCorte('bursfade')">
       <div class="corte-imagen-amg">
-        <img src="./IMG_0984.jpeg" alt="Corte AMG 5">
+        <img src="./IMG_0998.jpeg" alt="Bursfade">
       </div>
       <div class="corte-info-amg">
         <span class="corte-numero-amg">05</span>
-        <h3>NOMBRE DEL CORTE</h3>
-        <p>Descripción del estilo.</p>
+        <h3>BURSFADE</h3>
       </div>
-    </article>
+    </button>
 
-    <article class="corte-card-amg">
+    <button class="corte-card-amg" onclick="abrirGaleriaCorte('modcut')">
       <div class="corte-imagen-amg">
-        <img src="./IMG_0997.jpeg" alt="Corte AMG 6">
+        <img src="./IMG_0981.jpeg" alt="Mod cut">
       </div>
       <div class="corte-info-amg">
         <span class="corte-numero-amg">06</span>
-        <h3>NOMBRE DEL CORTE</h3>
-        <p>Descripción del estilo.</p>
+        <h3>MOD CUT</h3>
       </div>
-    </article>
-
-    <article class="corte-card-amg">
-      <div class="corte-imagen-amg">
-        <img src="./IMG_0998.jpeg" alt="Corte AMG 7">
-      </div>
-      <div class="corte-info-amg">
-        <span class="corte-numero-amg">07</span>
-        <h3>NOMBRE DEL CORTE</h3>
-        <p>Descripción del estilo.</p>
-      </div>
-    </article>
+    </button>
 
   </div>
+
+  <div id="visor-corte-amg" style="display:none;">
+    <button onclick="cerrarGaleriaCorte()">← Volver a estilos</button>
+    <h2 id="titulo-visor-corte"></h2>
+    <div id="fotos-visor-corte"></div>
+  </div>
+
 </section>
 
 <!-- GALERÍA DEL LOCAL -->
@@ -1639,6 +1679,98 @@ function volverGalerias() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+  // GALERÍAS INDIVIDUALES AMG BARBER
+
+const fotosCortesAMG = {
+  clasico: {
+    nombre: "CLÁSICO EN CAPAS",
+    fotos: [
+      "c410ea2b-54ef-4b51-8048-342311cf11d0.jpeg",
+      "f7fd86e4-6d85-4a8c-9f52-af8181f08e5f.jpeg",
+      "688b751c-0571-4589-ad87-0e5026707f26.jpeg",
+      "959d73db-c517-4cbd-bc24-174aa7fdac8a.jpeg"
+    ]
+  },
+
+  lowfade: {
+    nombre: "LOW FADE",
+    fotos: [
+      "fdd1768d-5085-498e-a582-acbe767b5cba.jpeg",
+      "9ed1625b-aaa0-4d40-ba2c-9b7c6af8518c.jpeg"
+    ]
+  },
+
+  lowtaper: {
+    nombre: "LOW TAPER",
+    fotos: [
+      "0aa909cc-0297-4b6e-8521-ae014c346121.jpeg",
+      "09355723-f940-4be8-b983-fa90a01d8692.jpeg"
+    ]
+  },
+
+  clasicotaper: {
+    nombre: "CLÁSICO + TAPER",
+    fotos: [
+      "3bb0ec3b-e781-4bc6-9f7f-cbba286e1777.jpeg",
+      "898c6dd1-8ec5-403b-bccb-2a197a2c4544.jpeg"
+    ]
+  },
+
+  bursfade: {
+    nombre: "BURSFADE",
+    fotos: [
+      "b61fe15c-6e2a-4eda-b6c8-48cafa3ff3ab.jpeg",
+      "d3c77622-f2eb-46eb-a641-0bfa3642cb37.jpeg"
+    ]
+  },
+
+  modcut: {
+    nombre: "MOD CUT",
+    fotos: [
+      "24591bfd-2c7d-42f0-9002-0a28e8b55e6b.jpeg"
+    ]
+  }
+};
+
+function abrirGaleriaCorte(tipo) {
+  const corte = fotosCortesAMG[tipo];
+
+  if (!corte) return;
+
+  document.querySelector(".cortes-grid-amg").style.display = "none";
+  document.querySelector(".galeria-header-amg").style.display = "none";
+  document.querySelector("#galeria-cortes > .btn-volver-galeria").style.display = "none";
+
+  document.getElementById("visor-corte-amg").style.display = "block";
+  document.getElementById("titulo-visor-corte").textContent = corte.nombre;
+
+  const contenedor = document.getElementById("fotos-visor-corte");
+  contenedor.innerHTML = "";
+
+  corte.fotos.forEach(foto => {
+    const imagen = document.createElement("img");
+    imagen.src = foto;
+    imagen.alt = corte.nombre;
+    imagen.style.width = "100%";
+    imagen.style.borderRadius = "12px";
+    imagen.style.marginBottom = "15px";
+    imagen.style.cursor = "zoom-in";
+
+    imagen.onclick = () => {
+      window.open(foto, "_blank");
+    };
+
+    contenedor.appendChild(imagen);
+  });
+}
+
+function cerrarGaleriaCorte() {
+  document.getElementById("visor-corte-amg").style.display = "none";
+  document.querySelector(".cortes-grid-amg").style.display = "grid";
+  document.querySelector(".galeria-header-amg").style.display = "block";
+  document.querySelector("#galeria-cortes > .btn-volver-galeria").style.display = "block";
+}
+  
 </script>
 
 </body>
